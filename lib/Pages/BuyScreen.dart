@@ -12,6 +12,7 @@ class BuyScreen extends StatefulWidget {
 class _BuyScreenState extends State<BuyScreen> {
   bool isBuyingCrypto = true;
   String amount = "";
+  String? selectedCrypto = 'BTC'; // Default selected cryptocurrency
 
   void _toggleBuyMode() {
     setState(() {
@@ -38,8 +39,8 @@ class _BuyScreenState extends State<BuyScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-        'Buy',
-        style: TextStyle(color: Colors.white),
+          'Buy',
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF212936),
         centerTitle: true,
@@ -59,7 +60,7 @@ class _BuyScreenState extends State<BuyScreen> {
                 ),
                 ElevatedButton(
                   onPressed: _toggleBuyMode,
-                  child: Text(isBuyingCrypto ? "By Crypto" : "By Money"),
+                  child: Text(isBuyingCrypto ? "Buy Crypto" : "Buy Money"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     elevation: 0,
@@ -87,38 +88,40 @@ class _BuyScreenState extends State<BuyScreen> {
                   ),
                 ),
                 SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // Placeholder for currency change action
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.attach_money, color: Colors.white), // Placeholder for currency icon
-                      Text(widget.currencyName, style: TextStyle(color: Colors.white)),
-                    ],
+
+                SizedBox(height: 20),
+                // If buying crypto, show a dropdown to select which cryptocurrency
+                if (isBuyingCrypto)
+                  DropdownButton<String>(
+                    value: selectedCrypto,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCrypto = newValue!;
+                      });
+                    },
+                    items: ['BTC', 'ETH', 'BNB', 'USDT'].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF39475B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                ),
+                SizedBox(height: 20),
               ],
             ),
-            SizedBox(height: 20),
+
             Spacer(),
             _buildCustomKeyboard(),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: amount.isNotEmpty
                   ? () {
-                // Navigate to select payment method
+                // Navigate to select payment method or handle purchase logic
               }
                   : null,
               child: Text(
-                  "Select Payment Method",
-                  style: TextStyle(color: Colors.black),
+                isBuyingCrypto ? "Buy ${selectedCrypto!}" : "Buy USD",
+                style: TextStyle(color: Colors.black),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFB1E457),
